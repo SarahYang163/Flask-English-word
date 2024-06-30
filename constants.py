@@ -1,8 +1,8 @@
 mysql_setting = {
-    'host': '',
+    'host': '43.138.75.243',
     'port': 3306,
     'user': 'root',
-    'passwd': "",
+    'passwd': "@2|d5^ZKstp6~BJS",
     # 数据库名称
     'db': 'web_online_words',
     'charset': 'utf8'
