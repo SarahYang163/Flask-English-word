@@ -22,7 +22,7 @@ def show(word):
     return render_template("show.html", word=word)
 
 
-@app.route("/add")
+@app.route("/WebOnlineWords/add")
 def add():
     return render_template("add.html")
 
