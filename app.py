@@ -12,7 +12,7 @@ connection = pymysql.connect(host='43.138.75.243', user='root', password='pjW;4y
                              cursorclass=pymysql.cursors.DictCursor)
 
 
-@app.route("/WebOnlineWords")
+@app.route("/WebOnlineWords/")
 def index():
     return render_template("index.html")
 
