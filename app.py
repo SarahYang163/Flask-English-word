@@ -87,6 +87,7 @@ def api_update_score():
         cursor.execute(
             'update  AllEnglishKnowledge set score =score+{} , frequency=frequency+1 where Chinese ="{}"'.format(size,
                                                                                                                  word))
+        access_logger.info(f'update {word} score: {size}')
         return {"code": 200}
 
 
