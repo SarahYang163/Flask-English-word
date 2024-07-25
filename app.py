@@ -5,11 +5,18 @@ import pymysql
 
 from constants import sql_need_display_word, sql_get_ENG
 from bs4 import BeautifulSoup as bs
+from utils.log import setup_logger
+import logging
 
 app = Flask(__name__)
 
 connection = pymysql.connect(host='43.138.75.243', user='root', password='pjW;4ymm!tRt', database='web_online_words',
                              cursorclass=pymysql.cursors.DictCursor)
+
+# 设置访问日志
+access_logger = setup_logger('access_logger', 'logs/access.log', level=logging.INFO)
+# 设置错误日志
+error_logger = setup_logger('error_logger', 'logs/error.log', level=logging.ERROR)
 
 
 @app.route("/WebOnlineWords/")
@@ -35,13 +42,13 @@ def api_word():
     with connection.cursor() as cursor:
         if request.method == "GET":
             cursor.execute(sql_need_display_word, (limit, offset,))
-            print(offset, limit)
+            access_logger.info(f'offset: {offset}, limit:{limit}')
             chosen_word = cursor.fetchall()
-            print(chosen_word)
+            access_logger.info(f'chosen_word: {chosen_word}')
             return {"data": chosen_word} if chosen_word else {"data": []}
         elif request.method == "POST":
             word = request.form.get("word")
-            print(word)
+            access_logger.info(f'word: {word}')
             response = requests.get("https://dict.youdao.com/search?q={}&keyfrom=new-fanyi.smartResult".format(word))
             soup = bs(response.text, "html.parser")
             data = soup.find("div", {"class": "trans-container"})
@@ -85,4 +92,4 @@ def api_update_score():
 
 
 if __name__ == "__main__":
-    app.run(port=8089)
+    app.run(debug=True, port=8089)
