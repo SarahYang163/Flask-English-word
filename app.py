@@ -79,7 +79,6 @@ def api_get_word_data():
             "url": "http://dict.youdao.com"
         }
 
-
 @app.route("/WebOnlineWords/api/update_score")
 def api_update_score():
     with connection.cursor() as cursor:
