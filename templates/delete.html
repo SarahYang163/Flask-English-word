@@ -21,21 +21,21 @@
     <h1 class="text-center">Web在线单词本</h1>
     <hr>
     <div id="add-words">
-        <h1>新增单词</h1>
-        <input class="form-control" id="word-input" placeholder="新单词输入在这里哦~" style="width: 500px"/>
+        <h1>删除单词</h1>
+        <input class="form-control" id="word-input" placeholder="单词输入在这里哦~" style="width: 500px"/>
         <p style="height: 10px;"></p>
-        <button class="btn btn-primary" onclick="submit();">添加</button>
+        <button class="btn btn-second" onclick="delete_word();">删除</button>
         <a href="/WebOnlineWords/" class="btn btn-danger">取消</a>
     </div>
     <script>
-        function submit() {
+        function delete_word() {
             var word = $("#word-input").val();
             if (word == "") {
                 alert("单词不能为空！");
                 return;
             }
             $.ajax({
-                type: 'POST',
+                type: 'DELETE',
                 url: '/WebOnlineWords/api/word',
                 data: {
                     word: word

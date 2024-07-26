@@ -6,59 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web在线单词本</title>
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <style>
         body {
             background-image: -moz-linear-gradient(90deg, rgb(184, 238, 255), rgb(231, 255, 199));
             background-image: -webkit-linear-gradient(90deg, rgb(184, 238, 255), rgb(231, 255, 199));
             background-image: linear-gradient(90deg, rgb(184, 238, 255), rgb(231, 255, 199));
         }
-        #words-table a {
+
+        /* 表格边框样式 */
+        .table-bordered {
+            border: 1px solid #ddd;
+        }
+
+
+        /* 表头背景颜色 */
+        .table-bordered th {
+            background-color: #f8f8f8;
+        }
+
+        #words-table td {
+            width: 100%;
+            text-align: center;
             font-size: 25px;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
             color: black;
+            border: 1px solid #ddd;
+
+        }
+
+        #pagination-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        #pagination-buttons button {
+            margin-left: 5px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center">Web在线单词本</h1>
-{#        <button onclick="nextPage();">Next Page</button>#}
-        <button id="next-page-btn" class="btn btn-primary">下一页</button> <!-- Next page button -->
-
+<div class="container">
+    <h1 class="text-center">Web在线单词本</h1>
+    <div id="pagination-buttons">
+        <button id="pre-page-btn" class="btn btn-primary">上一页</button>
+        <button id="next-page-btn" class="btn btn-primary">下一页</button>
         <a href="/WebOnlineWords/add" class="btn btn-primary">新增单词</a>
-        <hr>
-        <div id="words-table" class="row"></div>
-        <script>
-            let offset = 0;
-            const limit = 10;
-            const $words_table = $("#words-table");
-            const $next_page_btn = $("#next-page-btn");
-
-            // Function to fetch words with offset and limit
-            function fetchWords(offset, limit) {
-                $.ajax({
-                    type: 'GET',
-                    url: '/WebOnlineWords/api/word',
-                    data: { offset: offset, limit: limit },
-                    success: function(data) {
-                        $words_table.empty();
-                        $.each(data.data, function(i, item) {
-                            $words_table.append("<div class='col-md-2'><a class='text-center' href='/WebOnlineWords/show/" + item.word + "'>" + item.word + "</a></div>");
-                        });
-                    },
-                });
-            }
-
-            // Initial fetch with default offset and limit
-            fetchWords(offset, limit);
-
-            // Event listener for next page button
-            $next_page_btn.click(function() {
-                offset += limit; // Increment offset
-                fetchWords(offset, limit); // Fetch data for next page
-            });
-        </script>
+        <a href="/WebOnlineWords/delete" class="btn btn-primary">删除单词</a>
     </div>
+
+
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th class="text-center">Word Name</th>
+                </tr>
+                </thead>
+                <tbody id="words-table">
+                <!-- Words will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        let offset = 0;
+        let limit = 20;
+        let total = 0;
+
+        const $words_table = $("#words-table");
+        const $next_page_btn = $("#next-page-btn");
+        const $pre_page_btn = $("#pre-page-btn");
+
+
+        // Function to fetch words with offset and limit
+        function fetchWords(offset, limit) {
+            $.ajax({
+                type: 'GET',
+                url: '/WebOnlineWords/api/word',
+                data: {offset: offset, limit: limit},
+                success: function (data) {
+                    $words_table.empty();
+                    $.each(data.data, function (i, item) {
+                        $words_table.append("<tr><td class='text-center'><a href='/WebOnlineWords/show/" + item.word + "'>" + item.word + "</a></td></tr>");
+                    });
+                    total = data.total;
+                    updatePaginationButtons();
+                },
+            });
+        }
+
+        function updatePaginationButtons() {
+            $pre_page_btn.prop('disabled', offset === 0);
+            $next_page_btn.prop('disabled', offset + limit >= total);
+        }
+
+        // Initial fetch with default offset and limit
+        fetchWords(offset, limit);
+
+        // Event listener for next page button
+        $next_page_btn.click(function () {
+            offset += limit; // Increment offset
+            fetchWords(offset, limit); // Fetch data for next page
+        });
+        $pre_page_btn.click(function () {
+            offset -= limit; // Increment offset
+            fetchWords(offset, limit); // Fetch data for next page
+        });
+    </script>
+</div>
 </body>
 </html>
